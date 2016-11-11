@@ -532,14 +532,15 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(esp_osdebug_obj, esp_osdebug);
 STATIC mp_obj_t esp_save_config() {
     if ((wifi_get_opmode() & STATION_MODE) == 1) {
         struct station_config config = {{0}};
-        wifi_station_get_config(&config);
-        wifi_station_set_config(&config);
+        error_check(wifi_station_get_config(&config), "can't get STA config");
+        error_check(wifi_station_set_config(&config), "can't save STA config");
     }
     if ((wifi_get_opmode() & SOFTAP_MODE) == 1) {
         struct softap_config config = {{0}};
-        wifi_softap_get_config(&config);
-        wifi_softap_set_config(&config);
+        error_check(wifi_softap_get_config(&config), "can't get AP config");
+        error_check(wifi_softap_set_config(&config), "can't save AP config");
     }
+    error_check(wifi_set_opmode(wifi_get_opmode()), "can't save i/f status");
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(esp_save_config_obj, esp_save_config);
